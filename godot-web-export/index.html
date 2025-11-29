@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Journey Odyssey - Preview</title>
+    <style>
+        body { margin: 0; background: #000; color: #fff; font-family: Arial, sans-serif; }
+        canvas { display: block; margin: 0 auto; border: 1px solid #fff; }
+        #ui { position: absolute; top: 10px; left: 10px; }
+        button { margin: 5px; padding: 10px; background: #444; color: #fff; border: none; cursor: pointer; }
+        button:hover { background: #666; }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div>Score: <span id="score">0</span></div>
+        <div>Health: <span id="health">3</span></div>
+        <div>Shields: <span id="shields">0</span></div>
+        <div>Galaxy: <span id="galaxy">Awareness</span></div>
+    </div>
+    <canvas id="gameCanvas" width="1024" height="768"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let score = 0, health = 3, shields = 0, galaxy = 0;
+        const galaxies = ['Awareness', 'Consideration', 'Conversion', 'Loyalty'];
+        let player = { x: 100, y: 300, vx: 0, vy: 0 };
+        let stars = [{ x: 500, y: 200 }, { x: 1000, y: 400 }];
+        let blackHoles = [{ x: 800, y: 300 }];
+        let shieldsUp = [{ x: 1500, y: 250 }];
+
+        function update() {
+            // Simple movement
+            if (keys['w']) player.vy = -5;
+            else if (keys['s']) player.vy = 5;
+            else player.vy = 0;
+            if (keys['a']) player.vx = -5;
+            else if (keys['d']) player.vx = 5;
+            else player.vx = 0;
+            if (keys[' ']) { player.vx *= 2; player.vy *= 2; }
+
+            player.x += player.vx;
+            player.y += player.vy;
+
+            // Check collisions
+            stars = stars.filter(s => {
+                if (Math.abs(player.x - s.x) < 20 && Math.abs(player.y - s.y) < 20) {
+                    score += 10;
+                    return false;
+                }
+                return true;
+            });
+            blackHoles = blackHoles.filter(b => {
+                if (Math.abs(player.x - b.x) < 30 && Math.abs(player.y - b.y) < 30) {
+                    if (shields > 0) shields--;
+                    else health--;
+                    return false;
+                }
+                return true;
+            });
+            shieldsUp = shieldsUp.filter(sh => {
+                if (Math.abs(player.x - sh.x) < 20 && Math.abs(player.y - sh.y) < 20) {
+                    shields++;
+                    score += 50;
+                    return false;
+                }
+                return true;
+            });
+
+            // Galaxy progression
+            if (player.x > 2000 && galaxy < 3) galaxy++;
+            if (galaxy === 3) alert('Victory!');
+
+            // Update UI
+            document.getElementById('score').textContent = score;
+            document.getElementById('health').textContent = health;
+            document.getElementById('shields').textContent = shields;
+            document.getElementById('galaxy').textContent = galaxies[galaxy];
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Draw player
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(player.x, player.y, 40, 20);
+            // Draw stars
+            ctx.fillStyle = 'yellow';
+            stars.forEach(s => ctx.fillRect(s.x, s.y, 10, 10));
+            // Draw black holes
+            ctx.fillStyle = 'black';
+            blackHoles.forEach(b => ctx.beginPath(), ctx.arc(b.x, b.y, 30, 0, 2*Math.PI), ctx.fill());
+            // Draw shields
+            ctx.fillStyle = 'green';
+            shieldsUp.forEach(sh => ctx.fillRect(sh.x, sh.y, 15, 15));
+        }
+
+        let keys = {};
+        document.addEventListener('keydown', e => keys[e.key] = true);
+        document.addEventListener('keyup', e => keys[e.key] = false);
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        gameLoop();
+    </script>
+</body>
+</html>

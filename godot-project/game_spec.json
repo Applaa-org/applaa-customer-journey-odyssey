@@ -1,0 +1,75 @@
+{
+  "game": {
+    "name": "Customer Journey Odyssey",
+    "type": "2D",
+    "genre": "space-adventure",
+    "description": "A space-travel game where players fly through galaxies representing customer journey stages: Awareness, Consideration, Conversion, and Loyalty. Collect customer stars, avoid Drop-Off Black Holes, and upgrade your spaceship with Retention Shields."
+  },
+  "settings": {
+    "window": {
+      "width": 1024,
+      "height": 768
+    },
+    "physics": {
+      "gravity": 0
+    }
+  },
+  "player": {
+    "name": "Spaceship",
+    "health": 3,
+    "speed": 300,
+    "abilities": ["fly", "shield_upgrade"]
+  },
+  "entities": {
+    "enemies": [
+      {
+        "name": "Drop-Off Black Hole",
+        "health": 0,
+        "speed": 0,
+        "damage": 1,
+        "behavior": "stationary"
+      }
+    ],
+    "collectibles": [
+      {
+        "name": "Customer Star",
+        "value": 10
+      },
+      {
+        "name": "Retention Shield",
+        "value": 0,
+        "effect": "gain_shield"
+      }
+    ]
+  },
+  "levels": [
+    {
+      "name": "Awareness Galaxy",
+      "background": "space",
+      "obstacles": ["black_hole"]
+    },
+    {
+      "name": "Consideration Galaxy",
+      "background": "space",
+      "obstacles": ["black_hole"]
+    },
+    {
+      "name": "Conversion Galaxy",
+      "background": "space",
+      "obstacles": ["black_hole"]
+    },
+    {
+      "name": "Loyalty Galaxy",
+      "background": "space",
+      "obstacles": ["black_hole"]
+    }
+  ],
+  "logic": {
+    "winCondition": "reach_loyalty_galaxy",
+    "loseCondition": "health_zero",
+    "scoring": {
+      "pointsPerStar": 10,
+      "pointsPerShield": 50
+    }
+  }
+}

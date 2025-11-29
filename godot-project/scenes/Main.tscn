@@ -1,0 +1,60 @@
+[gd_scene load_steps=5 format=3 uid="uid://mainscene"]
+
+[ext_resource type="Script" path="res://scripts/Main.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://playerscene" path="res://scenes/Player.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://starscene" path="res://scenes/Star.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://blackholescene" path="res://scenes/BlackHole.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://shieldscene" path="res://scenes/ShieldUpgrade.tscn" id="5"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(100, 300)
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScoreLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+text = "Score: 0"
+
+[node name="HealthLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 40.0
+text = "Health: 3"
+
+[node name="ShieldsLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 70.0
+text = "Shields: 0"
+
+[node name="GalaxyLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 10.0
+text = "Galaxy"
+
+# Add multiple stars, black holes, and shields scattered across the level
+[node name="Star1" parent="." instance=ExtResource("3")]
+position = Vector2(500, 200)
+
+[node name="Star2" parent="." instance=ExtResource("3")]
+position = Vector2(1000, 400)
+
+[node name="BlackHole1" parent="." instance=ExtResource("4")]
+position = Vector2(800, 300)
+
+[node name="Shield1" parent="." instance=ExtResource("5")]
+position = Vector2(1500, 250)
+
+# Add more as needed for full level
