@@ -93,22 +93,17 @@
             blackHoles.forEach(bh => {
                 if (Math.hypot(player.x - bh.x, player.y - bh.y) < 40) {
                     health -= 50;
-                    if (health <= 0) health = 0;
                 }
             });
             if (player.x + 20 > goal.x && player.y > goal.y - goal.height/2 && player.y < goal.y + goal.height/2) {
                 level++;
                 if (level >= 4) {
                     gameState = 'victory';
-                    document.getElementById('final-score').textContent = `Score: ${score}`;
                 } else {
                     initGame();
                 }
             }
-            if (health <= 0) {
-                gameState = 'defeat';
-                document.getElementById('final-score-defeat').textContent = `Score: ${score}`;
-            }
+            if (health <= 0) gameState = 'defeat';
         }
 
         function draw() {
@@ -127,14 +122,7 @@
                 shields.filter(s => !s.collected).forEach(shield => ctx.fillRect(shield.x - 10, shield.y - 10, 20, 20));
                 // Draw black holes
                 ctx.fillStyle = '#000';
-                ctx.strokeStyle = '#f00';
-                ctx.lineWidth = 2;
-                blackHoles.forEach(bh => {
-                    ctx.beginPath();
-                    ctx.arc(bh.x, bh.y, bh.radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.stroke();
-                });
+                blackHoles.forEach(bh => ctx.beginPath(), ctx.arc(bh.x, bh.y, bh.radius, 0, Math.PI*2), ctx.fill());
                 // Draw goal
                 ctx.fillStyle = '#f00';
                 ctx.fillRect(goal.x, goal.y - goal.height/2, goal.width, goal.height);
@@ -168,6 +156,8 @@
             document.getElementById('score').textContent = score;
             document.getElementById('health').textContent = health;
             document.getElementById('level').textContent = levels[level];
+            if (gameState === 'victory') document.getElementById('victory-screen').style.display = 'flex';
+            if (gameState === 'defeat') document.getElementById('defeat-screen').style.display = 'flex';
             requestAnimationFrame(gameLoop);
         }
         gameLoop();
