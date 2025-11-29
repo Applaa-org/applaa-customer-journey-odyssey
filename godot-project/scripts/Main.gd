@@ -9,7 +9,6 @@ var level_names = ["Awareness Galaxy", "Consideration Galaxy", "Conversion Galax
 
 func _ready():
 	update_ui()
-	# Spawn collectibles and obstacles based on level
 	spawn_entities()
 
 func _process(delta):
@@ -21,24 +20,33 @@ func update_ui():
 	level_label.text = level_names[Global.current_level]
 
 func spawn_entities():
-	# Simple spawning for demo - in full game, use more sophisticated placement
+	# Clear previous entities
+	for child in get_children():
+		if child.is_in_group("entity"):
+			child.queue_free()
+	
+	# Spawn collectibles and obstacles based on level
 	for i in range(10):
 		var star = preload("res://scenes/CustomerStar.tscn").instantiate()
 		star.position = Vector2(randf_range(100, 900), randf_range(100, 600))
+		star.add_to_group("entity")
 		add_child(star)
 	
 	if Global.current_level >= 1:
 		for i in range(5):
 			var shield = preload("res://scenes/RetentionShield.tscn").instantiate()
 			shield.position = Vector2(randf_range(100, 900), randf_range(100, 600))
+			shield.add_to_group("entity")
 			add_child(shield)
 	
 	for i in range(3):
 		var black_hole = preload("res://scenes/BlackHole.tscn").instantiate()
 		black_hole.position = Vector2(randf_range(200, 800), randf_range(200, 500))
+		black_hole.add_to_group("entity")
 		add_child(black_hole)
 	
 	# Goal at the end
 	var goal = preload("res://scenes/Goal.tscn").instantiate()
 	goal.position = Vector2(950, 384)
+	goal.add_to_group("entity")
 	add_child(goal)

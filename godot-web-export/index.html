@@ -73,8 +73,8 @@
             if (keys.space) { player.vx *= 1.5; player.vy *= 1.5; }
             player.x += player.vx;
             player.y += player.vy;
-            player.x = Math.max(0, Math.min(1024, player.x));
-            player.y = Math.max(0, Math.min(768, player.y));
+            player.x = Math.max(20, Math.min(1004, player.x));
+            player.y = Math.max(20, Math.min(748, player.y));
 
             // Check collisions
             stars.forEach(star => {
@@ -95,7 +95,7 @@
                     health -= 50;
                 }
             });
-            if (player.x + 20 > goal.x && player.y > goal.y - goal.height/2 && player.y < goal.y + goal.height/2) {
+            if (player.x > goal.x && player.y > goal.y - goal.height/2 && player.y < goal.y + goal.height/2) {
                 level++;
                 if (level >= 4) {
                     gameState = 'victory';
@@ -122,7 +122,14 @@
                 shields.filter(s => !s.collected).forEach(shield => ctx.fillRect(shield.x - 10, shield.y - 10, 20, 20));
                 // Draw black holes
                 ctx.fillStyle = '#000';
-                blackHoles.forEach(bh => ctx.beginPath(), ctx.arc(bh.x, bh.y, bh.radius, 0, Math.PI*2), ctx.fill());
+                ctx.strokeStyle = '#f00';
+                ctx.lineWidth = 2;
+                blackHoles.forEach(bh => {
+                    ctx.beginPath();
+                    ctx.arc(bh.x, bh.y, bh.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                });
                 // Draw goal
                 ctx.fillStyle = '#f00';
                 ctx.fillRect(goal.x, goal.y - goal.height/2, goal.width, goal.height);
@@ -156,6 +163,8 @@
             document.getElementById('score').textContent = score;
             document.getElementById('health').textContent = health;
             document.getElementById('level').textContent = levels[level];
+            document.getElementById('final-score').textContent = 'Score: ' + score;
+            document.getElementById('final-score-defeat').textContent = 'Score: ' + score;
             if (gameState === 'victory') document.getElementById('victory-screen').style.display = 'flex';
             if (gameState === 'defeat') document.getElementById('defeat-screen').style.display = 'flex';
             requestAnimationFrame(gameLoop);

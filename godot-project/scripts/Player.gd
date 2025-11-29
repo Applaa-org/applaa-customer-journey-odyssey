@@ -29,5 +29,5 @@ func _physics_process(delta):
 	move_and_slide()
 	
 	# Keep player in bounds
-	position.x = clamp(position.x, 0, 1024)
-	position.y = clamp(position.y, 0, 768)
+	position.x = clamp(position.x, 20, 1004)  # Account for sprite size
+	position.y = clamp(position.y, 20, 748)
