@@ -16,9 +16,9 @@
   },
   "player": {
     "name": "Spaceship",
-    "health": 3,
+    "health": 100,
     "speed": 300,
-    "abilities": ["fly", "shield_upgrade"]
+    "abilities": ["move", "collect_stars", "upgrade_shields"]
   },
   "entities": {
     "enemies": [
@@ -26,7 +26,7 @@
         "name": "Drop-Off Black Hole",
         "health": 0,
         "speed": 0,
-        "damage": 1,
+        "damage": 50,
         "behavior": "stationary"
       }
     ],
@@ -38,7 +38,7 @@
       {
         "name": "Retention Shield",
         "value": 0,
-        "effect": "gain_shield"
+        "effect": "increase_health"
       }
     ]
   },
@@ -46,30 +46,34 @@
     {
       "name": "Awareness Galaxy",
       "background": "space",
-      "obstacles": ["black_hole"]
+      "obstacles": ["black_holes"],
+      "collectibles": ["stars"]
     },
     {
       "name": "Consideration Galaxy",
       "background": "space",
-      "obstacles": ["black_hole"]
+      "obstacles": ["black_holes"],
+      "collectibles": ["stars", "shields"]
     },
     {
       "name": "Conversion Galaxy",
       "background": "space",
-      "obstacles": ["black_hole"]
+      "obstacles": ["black_holes"],
+      "collectibles": ["stars", "shields"]
     },
     {
       "name": "Loyalty Galaxy",
       "background": "space",
-      "obstacles": ["black_hole"]
+      "obstacles": ["black_holes"],
+      "collectibles": ["stars", "shields"]
     }
   ],
   "logic": {
-    "winCondition": "reach_loyalty_galaxy",
+    "winCondition": "reach_loyalty_galaxy_end",
     "loseCondition": "health_zero",
     "scoring": {
       "pointsPerStar": 10,
-      "pointsPerShield": 50
+      "pointsPerShield": 20
     }
   }
 }

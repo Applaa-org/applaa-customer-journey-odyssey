@@ -6,102 +6,158 @@
     <title>Customer Journey Odyssey - Preview</title>
     <style>
         body { margin: 0; background: #000; color: #fff; font-family: Arial, sans-serif; }
-        canvas { display: block; margin: 0 auto; border: 1px solid #fff; }
+        canvas { display: block; margin: 0 auto; border: 2px solid #fff; }
         #ui { position: absolute; top: 10px; left: 10px; }
-        button { margin: 5px; padding: 10px; background: #444; color: #fff; border: none; cursor: pointer; }
+        #start-screen, #victory-screen, #defeat-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; flex-direction: column; }
+        button { padding: 10px 20px; margin: 5px; background: #444; color: #fff; border: none; cursor: pointer; }
         button:hover { background: #666; }
     </style>
 </head>
 <body>
+    <div id="start-screen">
+        <h1>Customer Journey Odyssey</h1>
+        <p>Fly through galaxies: Awareness, Consideration, Conversion, Loyalty.<br>Collect stars, avoid black holes, upgrade shields.<br>Controls: WASD move, Space boost.</p>
+        <button id="start-btn">Start Journey</button>
+        <button id="close-btn">Close</button>
+    </div>
+    <div id="victory-screen">
+        <h1>Journey Complete!</h1>
+        <p id="final-score">Score: 0</p>
+        <button id="restart-victory-btn">Restart Journey</button>
+        <button id="menu-victory-btn">Main Menu</button>
+        <button id="close-victory-btn">Close</button>
+    </div>
+    <div id="defeat-screen">
+        <h1>Journey Failed!</h1>
+        <p id="final-score-defeat">Score: 0</p>
+        <button id="restart-defeat-btn">Restart Journey</button>
+        <button id="menu-defeat-btn">Main Menu</button>
+        <button id="close-defeat-btn">Close</button>
+    </div>
     <div id="ui">
         <div>Score: <span id="score">0</span></div>
-        <div>Health: <span id="health">3</span></div>
-        <div>Shields: <span id="shields">0</span></div>
-        <div>Galaxy: <span id="galaxy">Awareness</span></div>
+        <div>Health: <span id="health">100</span></div>
+        <div>Level: <span id="level">Awareness Galaxy</span></div>
     </div>
-    <canvas id="gameCanvas" width="1024" height="768"></canvas>
+    <canvas id="game-canvas" width="1024" height="768"></canvas>
+
     <script>
-        const canvas = document.getElementById('gameCanvas');
+        const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
-        let score = 0, health = 3, shields = 0, galaxy = 0;
-        const galaxies = ['Awareness', 'Consideration', 'Conversion', 'Loyalty'];
-        let player = { x: 100, y: 300, vx: 0, vy: 0 };
-        let stars = [{ x: 500, y: 200 }, { x: 1000, y: 400 }];
-        let blackHoles = [{ x: 800, y: 300 }];
-        let shieldsUp = [{ x: 1500, y: 250 }];
+        let gameState = 'start';
+        let score = 0;
+        let health = 100;
+        let level = 0;
+        const levels = ['Awareness Galaxy', 'Consideration Galaxy', 'Conversion Galaxy', 'Loyalty Galaxy'];
+        let player = { x: 50, y: 384, vx: 0, vy: 0 };
+        let stars = [];
+        let shields = [];
+        let blackHoles = [];
+        let goal = { x: 950, y: 384, width: 50, height: 768 };
+
+        function initGame() {
+            stars = Array.from({length: 10}, () => ({ x: Math.random() * 800 + 100, y: Math.random() * 500 + 100, collected: false }));
+            shields = level >= 1 ? Array.from({length: 5}, () => ({ x: Math.random() * 800 + 100, y: Math.random() * 500 + 100, collected: false })) : [];
+            blackHoles = Array.from({length: 3}, () => ({ x: Math.random() * 600 + 200, y: Math.random() * 300 + 200, radius: 30 }));
+        }
 
         function update() {
-            // Simple movement
-            if (keys['w']) player.vy = -5;
-            else if (keys['s']) player.vy = 5;
-            else player.vy = 0;
-            if (keys['a']) player.vx = -5;
-            else if (keys['d']) player.vx = 5;
-            else player.vx = 0;
-            if (keys[' ']) { player.vx *= 2; player.vy *= 2; }
-
+            if (gameState !== 'playing') return;
+            // Player movement
+            player.vx *= 0.9;
+            player.vy *= 0.9;
+            if (keys.w) player.vy -= 3;
+            if (keys.s) player.vy += 3;
+            if (keys.a) player.vx -= 3;
+            if (keys.d) player.vx += 3;
+            if (keys.space) { player.vx *= 1.5; player.vy *= 1.5; }
             player.x += player.vx;
             player.y += player.vy;
+            player.x = Math.max(0, Math.min(1024, player.x));
+            player.y = Math.max(0, Math.min(768, player.y));
 
             // Check collisions
-            stars = stars.filter(s => {
-                if (Math.abs(player.x - s.x) < 20 && Math.abs(player.y - s.y) < 20) {
+            stars.forEach(star => {
+                if (!star.collected && Math.hypot(player.x - star.x, player.y - star.y) < 30) {
+                    star.collected = true;
                     score += 10;
-                    return false;
                 }
-                return true;
             });
-            blackHoles = blackHoles.filter(b => {
-                if (Math.abs(player.x - b.x) < 30 && Math.abs(player.y - b.y) < 30) {
-                    if (shields > 0) shields--;
-                    else health--;
-                    return false;
+            shields.forEach(shield => {
+                if (!shield.collected && Math.hypot(player.x - shield.x, player.y - shield.y) < 30) {
+                    shield.collected = true;
+                    health += 20;
+                    score += 20;
                 }
-                return true;
             });
-            shieldsUp = shieldsUp.filter(sh => {
-                if (Math.abs(player.x - sh.x) < 20 && Math.abs(player.y - sh.y) < 20) {
-                    shields++;
-                    score += 50;
-                    return false;
+            blackHoles.forEach(bh => {
+                if (Math.hypot(player.x - bh.x, player.y - bh.y) < 40) {
+                    health -= 50;
                 }
-                return true;
             });
-
-            // Galaxy progression
-            if (player.x > 2000 && galaxy < 3) galaxy++;
-            if (galaxy === 3) alert('Victory!');
-
-            // Update UI
-            document.getElementById('score').textContent = score;
-            document.getElementById('health').textContent = health;
-            document.getElementById('shields').textContent = shields;
-            document.getElementById('galaxy').textContent = galaxies[galaxy];
+            if (player.x + 20 > goal.x && player.y > goal.y - goal.height/2 && player.y < goal.y + goal.height/2) {
+                level++;
+                if (level >= 4) {
+                    gameState = 'victory';
+                } else {
+                    initGame();
+                }
+            }
+            if (health <= 0) gameState = 'defeat';
         }
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Draw player
-            ctx.fillStyle = 'blue';
-            ctx.fillRect(player.x, player.y, 40, 20);
-            // Draw stars
-            ctx.fillStyle = 'yellow';
-            stars.forEach(s => ctx.fillRect(s.x, s.y, 10, 10));
-            // Draw black holes
-            ctx.fillStyle = 'black';
-            blackHoles.forEach(b => ctx.beginPath(), ctx.arc(b.x, b.y, 30, 0, 2*Math.PI), ctx.fill());
-            // Draw shields
-            ctx.fillStyle = 'green';
-            shieldsUp.forEach(sh => ctx.fillRect(sh.x, sh.y, 15, 15));
+            ctx.clearRect(0, 0, 1024, 768);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, 1024, 768);
+            if (gameState === 'playing') {
+                // Draw player
+                ctx.fillStyle = '#0f0';
+                ctx.fillRect(player.x - 20, player.y - 20, 40, 40);
+                // Draw stars
+                ctx.fillStyle = '#ff0';
+                stars.filter(s => !s.collected).forEach(star => ctx.fillRect(star.x - 10, star.y - 10, 20, 20));
+                // Draw shields
+                ctx.fillStyle = '#00f';
+                shields.filter(s => !s.collected).forEach(shield => ctx.fillRect(shield.x - 10, shield.y - 10, 20, 20));
+                // Draw black holes
+                ctx.fillStyle = '#000';
+                blackHoles.forEach(bh => ctx.beginPath(), ctx.arc(bh.x, bh.y, bh.radius, 0, Math.PI*2), ctx.fill());
+                // Draw goal
+                ctx.fillStyle = '#f00';
+                ctx.fillRect(goal.x, goal.y - goal.height/2, goal.width, goal.height);
+            }
         }
 
-        let keys = {};
-        document.addEventListener('keydown', e => keys[e.key] = true);
-        document.addEventListener('keyup', e => keys[e.key] = false);
+        const keys = {};
+        document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+        document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            gameState = 'playing';
+            score = 0;
+            health = 100;
+            level = 0;
+            player = { x: 50, y: 384, vx: 0, vy: 0 };
+            initGame();
+            document.getElementById('start-screen').style.display = 'none';
+        });
+        document.getElementById('close-btn').addEventListener('click', () => window.close());
+        document.getElementById('restart-victory-btn').addEventListener('click', () => location.reload());
+        document.getElementById('menu-victory-btn').addEventListener('click', () => location.reload());
+        document.getElementById('close-victory-btn').addEventListener('click', () => window.close());
+        document.getElementById('restart-defeat-btn').addEventListener('click', () => location.reload());
+        document.getElementById('menu-defeat-btn').addEventListener('click', () => location.reload());
+        document.getElementById('close-defeat-btn').addEventListener('click', () => window.close());
 
         function gameLoop() {
             update();
             draw();
+            document.getElementById('score').textContent = score;
+            document.getElementById('health').textContent = health;
+            document.getElementById('level').textContent = levels[level];
+            if (gameState === 'victory') document.getElementById('victory-screen').style.display = 'flex';
+            if (gameState === 'defeat') document.getElementById('defeat-screen').style.display = 'flex';
             requestAnimationFrame(gameLoop);
         }
         gameLoop();

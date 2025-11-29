@@ -1,11 +1,13 @@
 extends CharacterBody2D
 
-const SPEED = 200.0
-const BOOST_SPEED = 400.0
-var current_speed = SPEED
+const SPEED: float = 300.0
+const BOOST_SPEED: float = 500.0
+
+@onready var sprite = $Sprite2D
 
 func _physics_process(delta):
 	var direction = Vector2.ZERO
+	
 	if Input.is_action_pressed("ui_up"):
 		direction.y -= 1
 	if Input.is_action_pressed("ui_down"):
@@ -15,14 +17,17 @@ func _physics_process(delta):
 	if Input.is_action_pressed("ui_right"):
 		direction.x += 1
 	
-	if Input.is_action_pressed("ui_accept"):  # Space for boost
+	var current_speed = SPEED
+	if Input.is_action_pressed("ui_accept"):  # Spacebar for boost
 		current_speed = BOOST_SPEED
-	else:
-		current_speed = SPEED
 	
-	velocity = direction.normalized() * current_speed
+	if direction != Vector2.ZERO:
+		velocity = direction.normalized() * current_speed
+	else:
+		velocity = velocity.move_toward(Vector2.ZERO, SPEED * delta)
+	
 	move_and_slide()
 	
 	# Keep player in bounds
-	position.x = clamp(position.x, 0, 8000)  # Long level
-	position.y = clamp(position.y, 0, 600)
+	position.x = clamp(position.x, 0, 1024)
+	position.y = clamp(position.y, 0, 768)

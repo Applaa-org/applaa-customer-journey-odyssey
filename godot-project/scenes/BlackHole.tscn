@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://blackholescene"]
+[gd_scene load_steps=3 format=3 uid="uid://black_hole"]
 
 [ext_resource type="Script" path="res://scripts/BlackHole.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://blackhole" path="res://assets/blackhole.png" id="2"]
@@ -14,3 +14,4 @@ texture = ExtResource("2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_bh")
+</node>

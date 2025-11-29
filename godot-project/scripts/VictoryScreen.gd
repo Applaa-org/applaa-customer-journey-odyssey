@@ -12,11 +12,15 @@ func _ready():
 	close_button.pressed.connect(_on_close_pressed)
 
 func _on_restart_pressed():
-	Global.reset_game()
+	Global.reset_score()
+	Global.reset_health()
+	Global.current_level = 0
 	get_tree().change_scene_to_file("res://scenes/Main.tscn")
 
 func _on_main_menu_pressed():
-	Global.reset_game()
+	Global.reset_score()
+	Global.reset_health()
+	Global.current_level = 0
 	get_tree().change_scene_to_file("res://scenes/StartScreen.tscn")
 
 func _on_close_pressed():

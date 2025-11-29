@@ -5,4 +5,5 @@ func _ready():
 
 func _on_body_entered(body):
 	if body.name == "Player":
-		Global.take_damage(50)
+		Global.add_score(10)
+		queue_free()

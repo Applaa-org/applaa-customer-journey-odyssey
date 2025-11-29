@@ -1,10 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://victoryscreen"]
+[gd_scene load_steps=4 format=3 uid="uid://victory_screen"]
 
 [ext_resource type="Script" path="res://scripts/VictoryScreen.gd" id="1"]
 [ext_resource type="Theme" uid="uid://theme" path="res://themes/DefaultTheme.tres" id="2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_victory"]
-bg_color = Color(0, 0.5, 0, 1)
+bg_color = Color(0.1, 0.3, 0.1, 1)
 
 [node name="VictoryScreen" type="Control"]
 layout_mode = 3
@@ -42,22 +42,27 @@ alignment = 1
 [node name="VictoryLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("2")
-text = "Victory! You've completed the Customer Journey!"
+text = "Journey Complete!"
 horizontal_alignment = 1
 
 [node name="ScoreLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
 theme = ExtResource("2")
 text = "Score: 0"
+horizontal_alignment = 1
 
 [node name="RestartButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Restart Level"
+theme = ExtResource("2")
+text = "Restart Journey"
 
 [node name="MainMenuButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("2")
 text = "Main Menu"
 
 [node name="CloseButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+theme = ExtResource("2")
 text = "Close"
+</node>
